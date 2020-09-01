@@ -36,10 +36,12 @@ request.setAttribute("aa",str);
     list.add("xx");
     request.setAttribute("list",list);
 %>
+${list}
 ${empty aa}
 ${empty list}
 ${not empty aa}
 ${not empty list}
+
 
 
 
