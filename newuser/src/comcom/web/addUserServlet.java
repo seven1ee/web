@@ -31,7 +31,7 @@ public class addUserServlet extends HttpServlet
         //2.获取参数
         Map<String,String[]> map= req.getParameterMap();
 //        String name = req.getParameter("name");
-//        String sex = req.getParameter("sex");
+        String sex = req.getParameter("sex");
 //        String address = req.getParameter("address");
 //        String qq = req.getParameter("qq");
 //        String email = req.getParameter("email");
@@ -55,6 +55,7 @@ public class addUserServlet extends HttpServlet
             e.printStackTrace();
         }
         System.out.println(user);
+        System.out.println(sex);
         //4.调用service add方法
         UserServiceImpl service = new UserServiceImpl();
         service.addUser(user);
