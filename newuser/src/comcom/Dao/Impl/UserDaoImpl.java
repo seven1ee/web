@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.jws.soap.SOAPBinding;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,8 +86,25 @@ public class UserDaoImpl implements UserDao {
 //                sb.append("and "+key+"like ?");
 //            }
 //        }
-        System.out.println("sql finTotalCount"+ sb.toString());
+        System.out.println("sql finTotalCount:"+ sb.toString());
         return template.queryForObject(sb.toString(),Integer.class);
+    }
+
+    @Override
+    public List<User> findByPage(int start, int rows, Map<String, String[]> condition)
+    {
+        String sql="select * from user where 1=1";
+        StringBuilder sb=new StringBuilder(sql);
+        Set<String> keySet=condition.keySet();
+
+        List<Object> params = new ArrayList<>();
+        params.add(start);
+        params.add(rows);
+        sb.append("and limit ?,?");
+        System.out.println("sql findByPage:"+sb.toString());
+        System.out.println("params:"+params);
+
+        return template.query(sql,new BeanPropertyRowMapper<User>(User.class),params.toArray());
     }
 }
 
