@@ -30,21 +30,42 @@
     </style>
 
     <script>
-        function dl(id){
+        function deleteUser(id){
             //用户安全提示
             if(confirm("您确定要删除吗？")){
                 //访问路径
                 location.href="${pageContext.request.contextPath}/delUserServlet?id="+id;
             }
         }
-
-        window.onload=function () {
-            document.getElementById("del")
-
+        window.onload = function () {
+            //  给删除按钮添加单机事件
+            //批量删除按钮
+            document.getElementById("delSelected").onclick = function () {
+                //用户安全提示
+                var flag = false;
+                if(confirm("您确定要删除吗？")){
+                    var cbs =  document.getElementsByName("uid");
+                    for (let i = 0; i < cbs.length; i++) {
+                        if (cbs[i].checked){
+                            // 有一个被选中了
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag){
+                        document.getElementById("form").submit();
+                    }
+                }
+            }
+            // 获取第一个checkbox
+            document.getElementById("firstCb").onclick = function () {
+                // 全选
+                var cbs =  document.getElementsByName("uid");
+                for (let i = 0; i < cbs.length ; i++) {
+                    cbs[i].checked = this.checked;
+                }
+            }
         }
-
-
-
     </script>
 </head>
 <body>
@@ -72,6 +93,79 @@
 
     </div>
 
+    <div style="float: right;margin: 5px;">
+
+        <a class="btn btn-primary" href="${pageContext.request.contextPath}/add.jsp">添加联系人</a>
+        <a class="btn btn-primary" href="javascript:void(0);" id="delSelected">删除选中</a>
+
+    </div>
+    <form id="form" action="${pageContext.request.contextPath}/delSelectedServlet" method="post">
+        <table border="1" class="table table-bordered table-hover">
+            <tr class="success">
+                <th><input type="checkbox" id="firstCb"></th>
+                <th>编号</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>年龄</th>
+                <th>籍贯</th>
+                <th>QQ</th>
+                <th>邮箱</th>
+                <th>操作</th>
+            </tr>
+
+            <c:forEach items="${users}" var="user" varStatus="s">
+                <tr>
+                    <td><input type="checkbox" name="uid" value="${user.id}"></td>
+                    <td>${s.count}</td>
+                    <td>${user.name}</td>
+                    <td>${user.gender}</td>
+                    <td>${user.age}</td>
+                    <td>${user.address}</td>
+                    <td>${user.qq}</td>
+                    <td>${user.email}</td>
+                    <td><a class="btn btn-default btn-sm" href="${pageContext.request.contextPath}/findUserServlet?id=${user.id}">修改</a>&nbsp;
+                        <a class="btn btn-default btn-sm" href="javascript:deleteUser(${user.id});">删除</a></td>
+                </tr>
+
+            </c:forEach>
+
+
+        </table>
+    </form>
+    <div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li>
+                    <a href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">5</a></li>
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <span style="font-size: 25px;margin-left: 5px;">
+                    共16条记录，共4页
+                </span>
+
+            </ul>
+        </nav>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
     <div style="float: right;margin: 5px;">
 
         <a class="btn btn-primary" href="${pageContext.request.contextPath}/add.jsp">添加联系人</a>

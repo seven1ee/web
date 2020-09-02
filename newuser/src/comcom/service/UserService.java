@@ -14,5 +14,6 @@ public interface UserService
     void delete(String id);
     User findUserById(String id);
     User login(User user);
+    void deleteSelectedUser(String[] id);
 
 }

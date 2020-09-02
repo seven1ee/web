@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.jws.soap.SOAPBinding;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class UserDaoImpl implements UserDao {
     private JdbcTemplate template = new JdbcTemplate(JDBCUtils.getDataSource());
@@ -18,6 +20,7 @@ public class UserDaoImpl implements UserDao {
         // * 一般我们使用BeanPropertyRowMapper实现类。可以完成数据到JavaBean的自动封装  new BeanPropertyRowMapper<类型>(类型.class)
 //        List<User> users = template.query(sql, new BeanPropertyRowMapper<User>(User.class));
 //        return users;
+        int id=5;
         return template.query(sql,new BeanPropertyRowMapper<User>(User.class));
     }
 
@@ -61,6 +64,28 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public int findTotalCount(Map<String, String[]> condition)
+    {
+        String sql="select count(*) from user where 1=1";
+        StringBuilder sb=new StringBuilder(sql);
+        Set<String> keySet=condition.keySet();
+//        for(String key:keySet){
+//            //排除分页的条件
+//            if ("currentPage".equals(key)||"rows".equals(key)){
+//                continue;
+//            }
+//            //获取value值
+//            String value = condition.get(key)[0];
+//            //判断value是否有值
+//            if(value !=null&&"".equals(value)){
+//                sb.append("and "+key+"like ?");
+//            }
+//        }
+        System.out.println("sql finTotalCount"+ sb.toString());
+        return template.queryForObject(sb.toString(),Integer.class);
     }
 }
 
