@@ -30,7 +30,7 @@
 <body>
 <div class="container" style="width: 400px;">
     <h3 style="text-align: center;">管理员登录</h3>
-    <form action="login" method="post">
+    <form action="" method="post">
         <div class="form-group">
             <label for="user">用户名：</label>
             <input type="text" name="user" class="form-control" id="user" placeholder="请输入用户名"/>

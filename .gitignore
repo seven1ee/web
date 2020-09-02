@@ -21,3 +21,10 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+.gitattributes
+*.xml
+*.html
+*.js
+out/production/day3_request/META-INF/day3_request.kotlin_module
+out/artifacts/day01_servlet_demo_war_exploded/index.jsp
+out/artifacts/day02_servlet_class_war_exploded/index.jsp
