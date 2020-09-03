@@ -28,3 +28,5 @@ hs_err_pid*
 out/production/day3_request/META-INF/day3_request.kotlin_module
 out/artifacts/day01_servlet_demo_war_exploded/index.jsp
 out/artifacts/day02_servlet_class_war_exploded/index.jsp
+web/
+batis01/batis01.iml

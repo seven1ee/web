@@ -25,7 +25,7 @@ public class DelUserServlet extends HttpServlet
     {
         String id=req.getParameter("id");
         UserServiceImpl service = new UserServiceImpl();
-        service.delete(id);
+        service.deleteUser(id);
         resp.sendRedirect(req.getContextPath()+"/userListServlet");
     }
 }
