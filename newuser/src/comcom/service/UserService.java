@@ -1,19 +1,33 @@
 package comcom.service;
 
+import comcom.domain.PageBean;
 import comcom.domain.User;
 
 import java.util.List;
+import java.util.Map;
 
-public interface UserService
-{
+/**
+ * 用户管理业务接口
+ */
+
+
+public interface UserService {
+    // 查询所有用户信息
     public List<User> findAll();
 
-    public void addUser(User user);
+
+    void addUser(User user);
 
     void update(User user);
-    void delete(String id);
+
+    void deleteUser(String id);
+
     User findUserById(String id);
+
     User login(User user);
-    void deleteSelectedUser(String[] id);
+
+    void deleteSelectedUser(String[] ids);
+
+    public PageBean<User> findUserByPage(String _currentPage, String _rows, Map<String, String[]> condition);
 
 }

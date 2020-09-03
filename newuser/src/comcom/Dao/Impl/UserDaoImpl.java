@@ -1,19 +1,27 @@
 package comcom.Dao.Impl;
 
+
 import comcom.Dao.UserDao;
 import comcom.domain.User;
 import comcom.util.JDBCUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
-import javax.jws.soap.SOAPBinding;
-import java.lang.reflect.Array;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class UserDaoImpl implements UserDao {
+/**
+ * @author Eric Lee
+ * @date 2020/8/31 14:45
+ */
+public class UserDaoImpl implements UserDao
+{
     private JdbcTemplate template = new JdbcTemplate(JDBCUtils.getDataSource());
     @Override
     public List<User> findAll() {
@@ -22,89 +30,120 @@ public class UserDaoImpl implements UserDao {
         // * 一般我们使用BeanPropertyRowMapper实现类。可以完成数据到JavaBean的自动封装  new BeanPropertyRowMapper<类型>(类型.class)
 //        List<User> users = template.query(sql, new BeanPropertyRowMapper<User>(User.class));
 //        return users;
-        int id=5;
-        return template.query(sql,new BeanPropertyRowMapper<User>(User.class));
+        return template.query(sql, new BeanPropertyRowMapper<User>(User.class));
     }
 
     @Override
-    public void add(User user)
-    {
-        String sql="insert into user values(null,?,?,?,?,?,?,null ,null )";
-        template.update(sql,user.getName(),user.getGender(),user.getAge(),user.getAddress(),user.getQq(),user.getEmail());
+    public void add(User user) {
+        String sql = "insert into user values(null, ?,?,?,?,?,?, null, null)";
+        int i = template.update(sql, user.getName(),
+                user.getGender(), user.getAge(), user.getAddress(), user.getQq(), user.getEmail());
+        System.out.println(i);
     }
 
     @Override
-    public void update(User user)
-    {
-        String sql = "update user set gender = ?, age = ?, address = ? , qq = ?, email = ? where id = ?";
-        template.update(sql, user.getGender(), user.getAge(), user.getAddress(), user.getQq(), user.getEmail(), user.getId());
+    public void update(User user) {
+        // TODO
+        String sql = "update user set  name = ?, gender = ?, age = ?, address = ? , qq = ?, email = ? where id = ?";
+        template.update(sql, user.getName(),  user.getGender(), user.getAge(), user.getAddress(),
+                user.getQq(), user.getEmail(), user.getId());
+
     }
 
     @Override
-    public void delete(int id)
-    {
-        String sql="delete from user where id =?";
+    public void delete(int id) {
+        String sql = "delete from user where id = ?";
+
         template.update(sql,id);
     }
 
     @Override
-    public User findById(int id)
-    {
-        String sql="select * from user where id=?";
-        return template.queryForObject(sql,new BeanPropertyRowMapper<User>(User.class),id);
+    public User findById(int id) {
+
+        String sql = "select * from user where id = ?";
+
+        return template.queryForObject(sql, new BeanPropertyRowMapper<User>(User.class), id);
     }
 
     @Override
-    public User findUserByNameAndPW(String username, String password)
-    {
+    public User findUserByUserNameAndPassword(String username, String password) {
         try {
             String sql = "select * from user where username = ? and password = ?";
-            User user= template.queryForObject(sql, new BeanPropertyRowMapper<User>(User.class), username, password);
+            User user = template.queryForObject(sql, new BeanPropertyRowMapper<User>(User.class), username, password);
             return user;
-        }
-        catch (Exception e){
+        }catch (Exception e){
             e.printStackTrace();
             return null;
         }
+
     }
 
     @Override
-    public int findTotalCount(Map<String, String[]> condition)
-    {
-        String sql="select count(*) from user where 1=1";
-        StringBuilder sb=new StringBuilder(sql);
-        Set<String> keySet=condition.keySet();
-//        for(String key:keySet){
-//            //排除分页的条件
-//            if ("currentPage".equals(key)||"rows".equals(key)){
-//                continue;
-//            }
-//            //获取value值
-//            String value = condition.get(key)[0];
-//            //判断value是否有值
-//            if(value !=null&&"".equals(value)){
-//                sb.append("and "+key+"like ?");
-//            }
-//        }
-        System.out.println("sql finTotalCount:"+ sb.toString());
-        return template.queryForObject(sb.toString(),Integer.class);
-    }
-
-    @Override
-    public List<User> findByPage(int start, int rows, Map<String, String[]> condition)
-    {
-        String sql="select * from user where 1=1";
-        StringBuilder sb=new StringBuilder(sql);
-        Set<String> keySet=condition.keySet();
+    public int findTotalCount(Map<String, String[]> condition) {
+        String sql = "SELECT COUNT(*) FROM user where 1 = 1";
+        StringBuilder sb = new StringBuilder(sql);
+        // 遍历map
+        Set<String> keySet = condition.keySet();
+        // {name : "李" , address :"广"   email = "111"}
 
         List<Object> params = new ArrayList<>();
+
+        for (String key :keySet){
+            // 排除 分页的条件参数
+            if ("currentPage".equals(key) || "rows".equals(key)){
+                continue;
+            }
+//            SELECT count(*) FROM user WHERE 1=1 AND name LIKE '%李%'
+            // 获取value值
+            String value = condition.get(key)[0];
+            // 判断value是否有值
+            if (value !=null && "".equals(value)){
+                sb.append("  and "+ key +"like ?  ");
+                params.add("%" + value+"%");
+            }
+        }
+        System.out.println("sql findTotalCount" +sb.toString());
+        System.out.println(params);
+
+
+//        return template.queryForObject(sb.toString(), Integer.class);
+        return template.queryForObject(sb.toString(), Integer.class, params.toArray());
+    }
+
+    @Override
+    public List<User> findByPage(int start, int rows, Map<String, String[]> condition) {
+
+        String sql = "select * from user where 1= 1  ";
+//        String sql = "select * from user  limit ?,?";
+        StringBuilder sb = new StringBuilder(sql);
+        Set<String> keySet = condition.keySet();
+//
+        List<Object> params = new ArrayList<>();
+
+        for (String key :keySet){
+            // 排除 分页的条件参数
+            if ("currentPage".equals(key) || "rows".equals(key)){
+                continue;
+            }
+//            SELECT count(*) FROM user WHERE 1=1 AND name LIKE '%李%'
+            // 获取value值
+            String value = condition.get(key)[0];
+            // 判断value是否有值
+            if (value !=null && "".equals(value)){
+                sb.append("  and "+ key +"like ?  ");
+                params.add("%" + value+"%");
+            }
+        }
+//        // 添加分页
+        sb.append("   limit ?,? ");
         params.add(start);
         params.add(rows);
-        sb.append("and limit ?,?");
-        System.out.println("sql findByPage:"+sb.toString());
-        System.out.println("params:"+params);
+        sql = sb.toString();
+        System.out.println("sqlfindByPage"+sql);
+        System.out.println("params"+params);
 
-        return template.query(sql,new BeanPropertyRowMapper<User>(User.class),params.toArray());
+
+//        return template.query(sql, new BeanPropertyRowMapper<User>(User.class), params.toArray());
+        return template.query(sql, new BeanPropertyRowMapper<User>(User.class), params.toArray());
     }
 }
-
